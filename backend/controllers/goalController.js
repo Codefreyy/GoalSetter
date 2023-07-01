@@ -1,12 +1,14 @@
+const asyncHandler = require("express-async-handler");
+
 /**
  * @desc Get goals
  * @route GET /api/goals
  * @access Private
  */
-const getGoals = (req, res) => {
+const getGoals = asyncHandler(async (req, res) => {
   console.log(11);
   res.status(200).json({ message: "get Goals" });
-};
+});
 
 /**
  * @desc set goals
@@ -14,9 +16,14 @@ const getGoals = (req, res) => {
  * @access Private
  *
  */
-const setGoal = (req, res) => {
+const setGoal = asyncHandler(async (req, res) => {
+  if (!req.body.text) {
+    res.status(400);
+    // the middleware will handle
+    throw new Error("Please add a text field");
+  }
   res.status(200).json({ message: "set Goal" });
-};
+});
 
 /**
  * @desc update goals
@@ -24,9 +31,9 @@ const setGoal = (req, res) => {
  * @access Private
  *
  */
-const updateGoal = (req, res) => {
+const updateGoal = asyncHandler(async (req, res) => {
   res.status(200).json({ message: `update goal ${req.params.id}` });
-};
+});
 
 /**
  * @desc delete goals
@@ -35,9 +42,9 @@ const updateGoal = (req, res) => {
  *
  */
 
-const deleteGoal = (req, res) => {
+const deleteGoal = asyncHandler(async (req, res) => {
   res.status(200).json({ message: `delete goal ${req.params.id}` });
-};
+});
 module.exports = {
   getGoals,
   setGoal,
