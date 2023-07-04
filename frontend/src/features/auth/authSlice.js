@@ -27,6 +27,23 @@ export const register = createAsyncThunk(
   }
 );
 
+// login user
+export const login = createAsyncThunk("auth/login", async (user, thunkAPI) => {
+  try {
+    return await authService.login(user);
+  } catch (err) {
+    const message =
+      (err.response && err.response.data && err.response.data.message) ||
+      err.message ||
+      err.toSting();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+export const logout = createAsyncThunk("auth/logout", async () => {
+  return await authService.logout();
+});
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -50,6 +67,23 @@ export const authSlice = createSlice({
         state.user = action.payload; // 也就是上面await authService.register(user)的结果，也就是register函数里return 的res.data
       })
       .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+      })
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload; // 也就是上面await authService.register(user)的结果，也就是register函数里return 的res.data
+      })
+      .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

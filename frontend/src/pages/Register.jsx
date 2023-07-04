@@ -13,11 +13,11 @@ function Register() {
         password: '',
         password2: '',
     })
-    const {name, email, password, password2, message} = formData
+    const {name, email, password, password2} = formData
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const {user, isLoading, isError, isSuccess} = useSelector((state)=> state.auth )
+    const {user, isLoading, isError, isSuccess, message} = useSelector((state)=> state.auth )
     useEffect(()=> {
         if(isError) {
             toast.error(message)
@@ -27,7 +27,7 @@ function Register() {
         }
 
         dispatch(reset())
-    }, [user, isError, isSuccess, navigate, dispatch])
+    }, [user, isError, isSuccess, navigate, dispatch, message])
     if (isLoading) return <Spinner/>
     const onChange = (e) => {
         setFormData((prevState)=> ({
