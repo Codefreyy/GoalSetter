@@ -1,18 +1,50 @@
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
+import GoalForm from "../components/GoalForm"
+import GoalItem from "../components/GoalItem"
+import Spinner from "../components/Spinner"
+import { getGoals, reset } from "../features/goals/goalSlice"
 
 function Dashboard() {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {goals, isLoading, isError, message} = useSelector((state)=> state.goal)
   const {user} = useSelector((state) => state.auth)
   useEffect(()=> {
     console.log(11111)
     if(!user) {
       navigate('/login')
     }
-  }, [navigate, user])
+    if(!isError) {
+      console.log(message)
+    }
+    dispatch(getGoals())
+    return () => {
+      dispatch(reset())
+    }
+  }, [navigate, user, isError, message, dispatch])
+  // the deleting is fast, so loading will effect user experience
+  // if(isLoading) {
+  //   return <Spinner/>
+  // }
   return (
-    <div>Dashboard</div>
+    <>
+      <section className="heading">
+        <h1>Welcome {user && user.name}</h1>
+        <p>Goals Dashboard</p>
+        <GoalForm></GoalForm>
+      </section>
+      <section className="content">
+        {goals.length>0 ? (
+          <div className="goals">
+            {goals.map(goal => 
+              <GoalItem key={goal._id} goal={goal}/>
+            )}
+          </div>
+        ) : (<h3>You have not set any goals</h3>)}
+      </section>
+    </>
   )
 }
 
